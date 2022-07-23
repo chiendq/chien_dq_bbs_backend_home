@@ -19,7 +19,14 @@ lazy val root =
         "org.scalikejdbc" %% "scalikejdbc" % "3.3.5",
         // skinny orm
         "org.skinny-framework" %% "skinny-orm" % "3.1.0",
+
+        // jwt
+        // https://mvnrepository.com/artifact/com.github.jwt-scala/jwt-core
+        "com.github.jwt-scala" %% "jwt-core" % "9.0.5",
+        // hashing libraries
+        "org.mindrot" % "jbcrypt" % "0.4"
+
       )
     )
 
-javacOptions ++= Seq("-source", "1.8")
+//javacOptions ++= Seq("-source", "1.8")

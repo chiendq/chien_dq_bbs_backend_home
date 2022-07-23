@@ -1,16 +1,19 @@
 package controllers
 
-import models.Post
+import jwt.{JWTConfig, JWTSecretKey}
+import models.{Post, User, UserEmail, UserId}
 
 import javax.inject._
 import play.api._
 import play.api.mvc._
+import services.JWTService
 
 import java.io.File
 import java.nio.file.Paths
 
 @Singleton
-class HomeController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
+class HomeController @Inject()(
+                                val controllerComponents: ControllerComponents) extends BaseController {
   lazy val logger = Logger(getClass)
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok
@@ -30,7 +33,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
         Ok("File uploaded")
       }
       .getOrElse {
-        Redirect(routes.HomeController.index).flashing("error" -> "Missing file")
+        BadRequest("Can not upload file")
       }
   }
 
@@ -39,4 +42,13 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     Ok
   }
 
+  def testCreateToken(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    val jwtService = new JWTService(new JWTConfig {
+      override def secretKey: JWTSecretKey = new JWTSecretKey("bimatkey")
+    })
+    val token = jwtService.createToken(User(UserId("123456789012"), UserEmail("chiendao@gmail.com")))
+
+    logger.info(token.toString)
+    Ok(jwtService.decodeToken(token).toString)
+  }
 }

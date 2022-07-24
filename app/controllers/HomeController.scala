@@ -1,11 +1,11 @@
 package controllers
 
 import io.jsonwebtoken.{Jwts, SignatureAlgorithm}
+import jwt.SecurityConstants._
 import models.{LoginPayLoad, Post}
 import play.api._
 import play.api.http.HttpEntity
 import play.api.mvc._
-import utils.SecurityConstants._
 
 import java.io.File
 import java.nio.file.Paths
@@ -13,12 +13,13 @@ import java.util.Date
 import javax.inject._
 
 @Singleton
-class HomeController @Inject()(
-                                val controllerComponents: ControllerComponents) extends BaseController {
+class HomeController @Inject()(authAction: AuthAction,
+                               val controllerComponents: ControllerComponents)
+  extends BaseController {
+
   lazy val logger = Logger(getClass)
 
-
-  def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+  def index(): Action[AnyContent] = authAction { implicit request: Request[AnyContent] =>
     Ok
   }
 
@@ -56,8 +57,7 @@ class HomeController @Inject()(
       .compact()
 
     Result
-      .apply(
-        header = ResponseHeader(OK, Map[String, String](HEADER_STRING -> (TOKEN_PREFIX + token))),
+      .apply(header = ResponseHeader(OK, Map[String, String](HEADER_STRING -> (TOKEN_PREFIX + token))),
         body = HttpEntity.NoEntity)
   }
 

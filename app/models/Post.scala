@@ -4,7 +4,7 @@ import org.joda.time.DateTime
 import scalikejdbc.WrappedResultSet
 import skinny.orm.{Alias, SkinnyMapperWithId}
 
-case class PostId(value: Long)
+case class PostId(value: Long) extends AnyVal
 
 case class Post(id: PostId,
                 title: String,

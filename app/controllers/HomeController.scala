@@ -1,7 +1,9 @@
 package controllers
 
+import io.jsonwebtoken.{Jwts, SignatureAlgorithm}
 import jwt.{JWTConfig, JWTSecretKey}
-import models.{Post, User, UserEmail, UserId}
+import models.{LoginPayLoad, Post, User, UserEmail, UserId}
+import pdi.jwt._
 
 import javax.inject._
 import play.api._
@@ -10,6 +12,7 @@ import services.JWTService
 
 import java.io.File
 import java.nio.file.Paths
+import java.util.Date
 
 @Singleton
 class HomeController @Inject()(
@@ -51,4 +54,38 @@ class HomeController @Inject()(
     logger.info(token.toString)
     Ok(jwtService.decodeToken(token).toString)
   }
+
+  object SecurityConstants {
+    val SECRET = "SecretToSignJWT"
+    val EXPIRATION_TIME = 1800000 // 30 minutes
+    val TOKEN_PREFIX = "Bearer "
+    val HEADER_STRING = "Authorization"
+  }
+
+  import SecurityConstants._
+  def login(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    val token = Jwts.builder()
+      .setSubject("this is user id")
+      .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+      .signWith(SignatureAlgorithm.HS512, SECRET )
+      .compact()
+//    Ok.withSession((HEADER_STRING, TOKEN_PREFIX + token))
+    Ok.withHeaders((HEADER_STRING, TOKEN_PREFIX + token))
+  }
+
+
+  def testAuthentication(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    val token = request.headers(HEADER_STRING)
+    logger.info(s"token $token")
+    val claims = Jwts.parser()
+      .setSigningKey(SECRET)
+      .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+      .getBody
+
+    val user = claims.getSubject
+    if (user == null) {
+      Unauthorized
+    } else Ok
+  }
+
 }

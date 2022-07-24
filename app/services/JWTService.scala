@@ -19,7 +19,7 @@ class JWTService(config: JWTConfig) {
     AuthorizationToken(token)
   }
 
-  def  decodeToken(token: AuthorizationToken):Unit = {
+  def  decodeToken(token: AuthorizationToken): JwtClaim = {
     Jwt
       .decode(token.string, config.secretKey.string, Seq(JwtAlgorithm.HS384))
       .map { decodedClaim =>
@@ -29,10 +29,8 @@ class JWTService(config: JWTConfig) {
 //
 //        println(s"id = $id")
 //        println(s"email = $email")
-        println(s"DecodeClaim : ${decodedClaim.toString()} ")
+        decodedClaim
       }
-      .getOrElse {
-        println(s"No DecodeClaim")
-      }
+      .get
   }
 }

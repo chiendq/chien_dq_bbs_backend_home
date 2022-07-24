@@ -8,5 +8,7 @@ GET     /                           controllers.HomeController.index()
 POST    /                           controllers.HomeController.sendImage()
 GET     /jwt                        controllers.HomeController.testCreateToken()
 GET     /posts                      controllers.HomeController.getAllPost()
+POST    /login                      controllers.HomeController.login()
+GET     /testAuthentication               controllers.HomeController.testAuthentication()
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

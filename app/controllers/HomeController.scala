@@ -14,14 +14,22 @@ import javax.inject._
 
 @Singleton
 class HomeController @Inject()(authAction: AuthAction,
-                               val controllerComponents: ControllerComponents)
-  extends BaseController {
+                               controllerComponents: ControllerComponents)
+  extends AbstractController(controllerComponents) {
 
-  lazy val logger = Logger(getClass)
+  lazy val logger: Logger = Logger(getClass)
 
-  def index(): Action[AnyContent] = authAction { implicit request: Request[AnyContent] =>
-    Ok
+
+  def index(): Action[AnyContent] = authAction {
+    implicit request =>
+      Ok
   }
+
+
+  //    authAction { implicit request: Request[AnyContent] =>
+  //    logger.info("INDEX IS CALLED")
+  //    Ok("Authenticated")
+  //  }
 
   def sendImage(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     request.body.asMultipartFormData.get
